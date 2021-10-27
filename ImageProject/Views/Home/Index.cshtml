@@ -1,0 +1,88 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<div>
+    <div>
+        <p>@User.Identity.Name</p>
+
+        <form method="post" asp-controller="Admin" asp-action="Index">
+            <input type="submit" value="Админка" />
+        </form>
+    </div>
+</div>
+<form method="post" enctype="multipart/form-data">
+    <div id="dropZoneUploadFile" style="width: 400px;height:400px;line-height:400px; border: 1px dashed #000000;text-align:center;">
+        Drop File Here
+    </div>
+    <br />
+    <img id="imgLoad" /> @*НАПОМИНАЛКА: Сделать loadIMG GIF и добавить в проект*@
+</form>
+<script type="text/javascript">
+    $(document).ready(function () {
+        InitDragAndDrop();
+        DragDropOperation();
+    });
+    function InitDragAndDrop()
+    {
+        $("#dropZoneUploadFile").on("dragenter", function (evt) {
+            evt.preventDefault();
+            evt.stopPropagation();
+        });
+
+        $("#dropZoneUploadFile").on("dragover", function (evt) {
+            evt.preventDefault();
+            evt.stopPropagation();
+        });
+
+        $("#dropZoneUploadFile").on("drop", function (evt) {
+            evt.preventDefault();
+            evt.stopPropagation();
+        });
+    }
+
+    function DragDropOperation() {
+        $("#dropZoneUploadFile").on("drop", function (evt) {
+            evt.preventDefault();
+            evt.stopPropagation();
+            var files = evt.originalEvent.dataTransfer.files;
+            var fileNames = "";
+
+            if (files.length > 0) {
+                fileNames += "Uploading file <br />"
+
+                for (var i = 0; i < files.length; i++) {
+                    fileNames += files[i].name + "<br />";
+                }
+            }
+
+            $("dropZoneUploadFile").html(fileNames);
+
+            var data = new FormData();
+
+            for (var i = 0; i < files.length; i++) {
+                data.append(files[i].name, files[i]);
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "Home/UploadFiles",
+                contentType: false,
+                processData: false,
+                data: data,
+                success: function (message) {
+                    $("#dropZoneUploadFile").html(message);
+                },
+                error: function () {
+                    $("#dropZoneUploadFile").html("Error");
+                },
+                beforeSend: function () {
+                    $("imgLoad").show();
+                },
+                complete: function () {
+                    $("imgLoad").hide();
+                },
+            });
+        });
+    }
+</script>

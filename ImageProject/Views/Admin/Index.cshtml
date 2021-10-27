@@ -1,0 +1,30 @@
+﻿@{
+    ViewData["Title"] = "AdminPanel";
+}
+
+<partial name="_AdminHeader"/>
+<div id="partialPlace">
+    <table class="table">
+        <tr>
+            <th>UserName</th>
+            <th>Email</th>
+            <th>Register Date</th>
+            <th></th>
+        </tr>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.UserName</td>
+                <td>@user.Email</td>
+                <td>@user.RegisterDate</td>
+                <td>
+                    <form asp-action="BanUser" asp-route-id="@user.Id" method="post">
+                        <a class="btn btn-sm btn-primary" asp-action="Edit" asp-route-id="@user.Id">Edit</a>
+                        <button type="submit" class="btn btn-sm btn-danger">Ban</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+

@@ -1,0 +1,27 @@
+﻿@model ImageProject.ViewModels.LoginViewModel
+
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="card d-block mx-auto" style="width: 20rem;">
+    <form class="card-body" method="post" asp-action="Login" asp-controller="Account" asp-route-returnUrl="@Model.ReturnUrl">
+        <h1 class="h3 mb-3 fw-normal">Sign in</h1>
+        <div asp-validation-summary="ModelOnly"></div>
+        <div class="form-floating">
+            <input class="form-control" asp-for="UserName" placeholder="Login" /><br />
+            <span asp-validation-for="UserName"></span>
+        </div>
+        <div class="form-floating">
+            <input type="password" class="form-control" asp-for="Password" placeholder="Password" /><br />
+            <span asp-validation-for="Password"></span>
+        </div>
+        <div class="checkbox mb-3">
+            <label asp-for="RememberMe"></label>
+            <input asp-for="RememberMe">
+        </div>
+        <div>
+            <input class="w-100 btn btn-lg btn-primary" type="submit" value="Login" />
+        </div>
+    </form>
+</div>
