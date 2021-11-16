@@ -8,7 +8,7 @@ namespace ImageProject.Models
 {
     public class User : IdentityUser
     {
-        public List<UserImage> UserImages { get; set; }
+        public List<UserImage> UserImages { get; set; } = new();
         public DateTime RegisterDate { get; set; }
     }
 }

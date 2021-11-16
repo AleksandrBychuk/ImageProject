@@ -55,7 +55,9 @@ namespace ImageProject.Controllers
                 {
                     imageData = binaryReader.ReadBytes((int)file.Length);
                 }
-                await _applicationContext.UserImages.AddAsync(new UserImage { DateAdded = DateTime.Now, Image = imageData, UserOwner = user });
+                //await _applicationContext.UserImages.AddAsync(new UserImage { DateAdded = DateTime.Now, Image = imageData, UserOwner = user });
+                user.UserImages.Add(new UserImage { DateAdded = DateTime.Now, Image = imageData, UserOwner = user });
+                await _applicationContext.SaveChangesAsync();
             }
             await _applicationContext.SaveChangesAsync();
             string message = $"{files.Count} upload on server!";

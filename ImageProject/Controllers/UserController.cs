@@ -26,9 +26,9 @@ namespace ImageProject.Controllers
         [HttpGet("User/{name}")] //НАПОМИНАЛКА: Разобраться полностью с дизайном в последнюю очередь! Не забыть!
         public async Task<IActionResult> Index(string name) //НАПОМИНАЛКА: Переделать получение картинок под связи в БД(читать metanit про менеджеров)!!! Заменить поиск юзеров где нужно под Finbynameasync...
         {
-            User user = await _userManager.FindByNameAsync(name);
-            List<UserImage> userImages = await _applicationContext.UserImages.Where(ui => ui.UserOwner == user).ToListAsync();
-            return View(userImages);
+            User user = await _applicationContext.Users.Include(i => i.UserImages).SingleAsync(x => x.UserName == name);
+
+            return View(user);
         }
     }
 }

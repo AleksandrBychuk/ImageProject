@@ -1,9 +1,24 @@
-﻿@model IEnumerable<ImageProject.Models.UserImage>
+﻿@model User
+
+@{
+    ViewData["Title"] = Model.UserName;
+}
 
 <div>
-    <p>@Model.FirstOrDefault().UserOwner.UserName</p>
-    @foreach (var item in Model)
-    {
-        @Html.Raw("<img style='width:500px; height:500px;' src=\"data:image/jpeg;base64," + Convert.ToBase64String(item.Image) + "\" />")
-    }
+    <p>@Model.UserName</p>
+    <br />
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-7">
+            @foreach (var item in Model.UserImages.OrderByDescending(u => u.DateAdded))
+            {
+                @Html.Raw("<img style='width:200px; height:200px;' src=\"data:image/jpeg;base64," + Convert.ToBase64String(item.Image) + "\" />")
+            }
+        </div>
+    </div>
 </div>
+<style>
+    img {
+        margin: 10px;
+    }
+</style>

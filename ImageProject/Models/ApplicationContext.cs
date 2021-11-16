@@ -8,11 +8,9 @@ using System.Threading.Tasks;
 
 namespace ImageProject.Models
 {
-    public class ApplicationContext : IdentityDbContext
+    public class ApplicationContext : IdentityDbContext<User>
     {
-        public override DbSet<IdentityUser> Users { get; set; }
         public DbSet<UserImage> UserImages { get; set; }
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options) { }
-
     }
 }

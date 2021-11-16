@@ -1,7 +1,9 @@
 ﻿using ImageProject.Models;
+using ImageProject.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,25 +23,19 @@ namespace ImageProject.Controllers
             _roleManager = roleManager;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View(_userManager.Users.ToList());
+            return View(await _userManager.GetUsersInRoleAsync("user"));
         }
 
-        public IActionResult Users()
+        public async  Task<IActionResult> Roles()
         {
-            return PartialView("_Users", _userManager.Users.ToList());
-        }
-
-        public IActionResult Roles()
-        {
-            return View(_roleManager.Roles.ToList());
+            return View(await _roleManager.Roles.ToListAsync());
         }
 
         public async Task<IActionResult> BannedUsers()
         {
-            var users = await _userManager.GetUsersInRoleAsync("banned");
-            return View(users);
+            return View(await _userManager.GetUsersInRoleAsync("banned"));
         }
 
         //НАПОМИНАЛКА: Сделать уведомление в хедере лайота для всех действий, в drag and drop добавить добавлеение через кнопку; Забаненный юзеры в общем списке, что с ними делать? Решить!
@@ -47,8 +43,8 @@ namespace ImageProject.Controllers
         public async Task<IActionResult> BanUser(string id)
         {
             User user = await _userManager.FindByIdAsync(id);
-            IdentityRole role = await _roleManager.FindByNameAsync("banned");
-            await _userManager.AddToRoleAsync(user, role.Name);
+            await _userManager.RemoveFromRoleAsync(user, "user");
+            await _userManager.AddToRoleAsync(user, "banned");
             return RedirectToAction("BannedUsers", "Admin");
         }
 
@@ -56,9 +52,49 @@ namespace ImageProject.Controllers
         public async Task<IActionResult> UnBanUser(string id)
         {
             User user = await _userManager.FindByIdAsync(id);
-            IdentityRole role = await _roleManager.FindByNameAsync("banned");
-            await _userManager.RemoveFromRoleAsync(user, role.Name);
+            await _userManager.RemoveFromRoleAsync(user, "banned");
+            await _userManager.AddToRoleAsync(user, "user");
             return RedirectToAction("BannedUsers", "Admin");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(string id)
+        {
+            User user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound(); //ОТПРАВИТЬ В ОБЩЕЕ УВЕДОМЛЕНИЕ
+            }
+            EditUserViewModel model = new EditUserViewModel { Id = user.Id, Email = user.Email, UserName = user.UserName };
+            return PartialView(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(EditUserViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                User user = await _userManager.FindByIdAsync(model.Id);
+                if (user != null)
+                {
+                    user.Email = model.Email;
+                    user.UserName = model.UserName;
+
+                    var result = await _userManager.UpdateAsync(user);
+                    if (result.Succeeded)
+                    {
+                        return RedirectToAction("Index");
+                    }
+                    else
+                    {
+                        foreach (var error in result.Errors)
+                        {
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        }
+                    }
+                }
+            }
+            return PartialView("_Edit", model);
         }
     }
 }

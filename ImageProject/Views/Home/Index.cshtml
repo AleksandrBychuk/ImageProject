@@ -12,7 +12,7 @@
     </div>
 </div>
 <form method="post" enctype="multipart/form-data">
-    <div id="dropZoneUploadFile" style="width: 400px;height:400px;line-height:400px; border: 1px dashed #000000;text-align:center;">
+    <div id="dropZoneUploadFile" class="dropdown" style="min-width: 400px;min-height:400px;line-height:400px; border: 1px dashed #000000;text-align:center;">
         Drop File Here
     </div>
     <br />
@@ -69,6 +69,7 @@
                 url: "Home/UploadFiles",
                 contentType: false,
                 processData: false,
+                acceptedFiles: 'image/png,image/jpeg,.jpeg,.jpg',
                 data: data,
                 success: function (message) {
                     $("#dropZoneUploadFile").html(message);

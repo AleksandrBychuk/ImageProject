@@ -2,7 +2,7 @@
     ViewData["Title"] = "AdminPanel";
 }
 
-<partial name="_AdminHeader"/>
+<partial name="_AdminHeader" />
 <div id="partialPlace">
     <table class="table">
         <tr>
@@ -18,8 +18,8 @@
                 <td>@user.Email</td>
                 <td>@user.RegisterDate</td>
                 <td>
-                    <form asp-action="BanUser" asp-route-id="@user.Id" method="post">
-                        <a class="btn btn-sm btn-primary" asp-action="Edit" asp-route-id="@user.Id">Edit</a>
+                    <a class="btn btn-sm btn-primary" asp-controller="Admin" asp-action="Edit" asp-route-id="@user.Id" data-bs-toggle="modal" data-bs-target="#exampleModal">Edit</a>
+                    <form asp-controller="Admin" asp-action="BanUser" asp-route-id="@user.Id" method="post">
                         <button type="submit" class="btn btn-sm btn-danger">Ban</button>
                     </form>
                 </td>
@@ -27,4 +27,4 @@
         }
     </table>
 </div>
-
+@await Html.PartialAsync("Edit", new ImageProject.ViewModels.EditUserViewModel { Email = string.Empty, Id = string.Empty, UserName = string.Empty, Password = string.Empty })
