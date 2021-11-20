@@ -9,11 +9,13 @@
         <h1 class="h3 mb-3 fw-normal">Sign in</h1>
         <div asp-validation-summary="ModelOnly"></div>
         <div class="form-floating">
-            <input class="form-control" asp-for="UserName" placeholder="Login" /><br />
+            <input class="form-control" type="text" id="floatingLogin" asp-for="UserName" placeholder="Login" /><br />
+            <label for="floatingLogin">Login</label>
             <span asp-validation-for="UserName"></span>
         </div>
         <div class="form-floating">
-            <input type="password" class="form-control" asp-for="Password" placeholder="Password" /><br />
+            <input class="form-control" type="password" id="floatingPassword" asp-for="Password" placeholder="Password" /><br />
+            <label for="floatingPassword">Password</label>
             <span asp-validation-for="Password"></span>
         </div>
         <div class="checkbox mb-3">
