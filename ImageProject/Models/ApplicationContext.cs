@@ -11,6 +11,7 @@ namespace ImageProject.Models
     public class ApplicationContext : IdentityDbContext<User>
     {
         public DbSet<UserImage> UserImages { get; set; }
+        public DbSet<СonstituentСolor> СonstituentСolors { get; set; }
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options) { }
     }
 }

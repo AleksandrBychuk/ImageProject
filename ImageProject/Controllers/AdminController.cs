@@ -38,7 +38,7 @@ namespace ImageProject.Controllers
             return View(await _userManager.GetUsersInRoleAsync("banned"));
         }
 
-        //НАПОМИНАЛКА: Сделать уведомление в хедере лайота для всех действий, в drag and drop добавить добавлеение через кнопку; Забаненный юзеры в общем списке, что с ними делать? Решить!
+        //НАПОМИНАЛКА: Сделать уведомление в хедере лайота для всех действий, в drag and drop добавить добавлеение через кнопку;
         [HttpPost]
         public async Task<IActionResult> BanUser(string id)
         {
@@ -58,7 +58,7 @@ namespace ImageProject.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(EditUserViewModel model) // приходит измененная, нужно искать по ID
+        public async Task<IActionResult> Edit(EditUserViewModel model)
         {
             if (ModelState.IsValid)
             {

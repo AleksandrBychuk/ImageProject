@@ -56,7 +56,16 @@ namespace ImageProject.Controllers
                     imageData = binaryReader.ReadBytes((int)file.Length);
                 }
                 //await _applicationContext.UserImages.AddAsync(new UserImage { DateAdded = DateTime.Now, Image = imageData, UserOwner = user });
-                user.UserImages.Add(new UserImage { DateAdded = DateTime.Now, Image = imageData, UserOwner = user });
+                var newImage = new UserImage { DateAdded = DateTime.Now, Image = imageData, UserOwner = user };
+                var constColors = new List<СonstituentСolor>
+                {
+                    new СonstituentСolor { HexColor = "#FF0C13", ValueCount = 8, Image = newImage },
+                    new СonstituentСolor { HexColor = "#68C350", ValueCount = 6, Image = newImage },
+                    new СonstituentСolor { HexColor = "#6365EF", ValueCount = 2, Image = newImage }
+                };
+                
+                newImage.СonstituentСolors = constColors;
+                user.UserImages.Add(newImage);
                 await _applicationContext.SaveChangesAsync();
             }
             await _applicationContext.SaveChangesAsync();

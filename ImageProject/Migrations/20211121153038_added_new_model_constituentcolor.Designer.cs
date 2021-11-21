@@ -4,14 +4,16 @@ using ImageProject.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ImageProject.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20211121153038_added_new_model_constituentcolor")]
+    partial class added_new_model_constituentcolor
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -120,17 +122,22 @@ namespace ImageProject.Migrations
                     b.Property<string>("HexColor")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ImageId")
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int?>("UserImageId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ValueCount")
-                        .HasColumnType("int");
+                    b.Property<string>("ValueCount")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ImageId");
+                    b.HasIndex("UserId");
 
-                    b.ToTable("СonstituentСolors");
+                    b.HasIndex("UserImageId");
+
+                    b.ToTable("СonstituentСolor");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -275,11 +282,15 @@ namespace ImageProject.Migrations
 
             modelBuilder.Entity("ImageProject.Models.СonstituentСolor", b =>
                 {
-                    b.HasOne("ImageProject.Models.UserImage", "Image")
-                        .WithMany("СonstituentСolors")
-                        .HasForeignKey("ImageId");
+                    b.HasOne("ImageProject.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
 
-                    b.Navigation("Image");
+                    b.HasOne("ImageProject.Models.UserImage", null)
+                        .WithMany("СonstituentСolors")
+                        .HasForeignKey("UserImageId");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
