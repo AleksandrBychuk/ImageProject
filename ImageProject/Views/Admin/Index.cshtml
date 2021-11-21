@@ -1,30 +1,41 @@
-﻿@{
+﻿@model List<User>
+@{
     ViewData["Title"] = "AdminPanel";
 }
 
 <partial name="_AdminHeader" />
 <div id="partialPlace">
-    <table class="table">
-        <tr>
-            <th>UserName</th>
-            <th>Email</th>
-            <th>Register Date</th>
-            <th></th>
-        </tr>
-        @foreach (var user in Model)
-        {
+    <form method="post">
+        <table class="table">
             <tr>
-                <td>@user.UserName</td>
-                <td>@user.Email</td>
-                <td>@user.RegisterDate</td>
-                <td>
-                    <a class="btn btn-sm btn-primary" asp-controller="Admin" asp-action="Edit" asp-route-id="@user.Id" data-bs-toggle="modal" data-bs-target="#exampleModal">Edit</a>
-                    <form asp-controller="Admin" asp-action="BanUser" asp-route-id="@user.Id" method="post">
-                        <button type="submit" class="btn btn-sm btn-danger">Ban</button>
-                    </form>
-                </td>
+                <th>UserName</th>
+                <th>Email</th>
+                <th>Register Date</th>
+                <th></th>
             </tr>
-        }
-    </table>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <input name="Id" type="hidden" asp-for="@user.Id" />
+                            <input name="UserName" class="form-control" asp-for="@user.UserName" />
+                            <span asp-validation-for="@user.UserName" class="text-danger"></span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <input name="Email" class="form-control" asp-for="@user.Email" />
+                            <span asp-validation-for="@user.Email" class="text-danger"></span>
+                        </div>
+                    </td>
+                    <td>@user.RegisterDate</td>
+                    <td>
+                        <button type="submit" asp-controller="Admin" asp-action="Edit" class="btn btn-sm btn-primary">Edit</button>
+                        <button type="submit" asp-controller="Admin" asp-action="BanUser" class="btn btn-sm btn-danger">Ban</button>
+                    </td>
+                </tr>
+            }
+        </table>
+    </form>
 </div>
-@await Html.PartialAsync("Edit", new ImageProject.ViewModels.EditUserViewModel { Email = string.Empty, Id = string.Empty, UserName = string.Empty, Password = string.Empty })

@@ -57,20 +57,8 @@ namespace ImageProject.Controllers
             return RedirectToAction("BannedUsers", "Admin");
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Edit(string id)
-        {
-            User user = await _userManager.FindByIdAsync(id);
-            if (user == null)
-            {
-                return NotFound(); //ОТПРАВИТЬ В ОБЩЕЕ УВЕДОМЛЕНИЕ
-            }
-            EditUserViewModel model = new EditUserViewModel { Id = user.Id, Email = user.Email, UserName = user.UserName };
-            return PartialView(model);
-        }
-
         [HttpPost]
-        public async Task<IActionResult> Edit(EditUserViewModel model)
+        public async Task<IActionResult> Edit(EditUserViewModel model) // приходит измененная, нужно искать по ID
         {
             if (ModelState.IsValid)
             {
@@ -82,9 +70,7 @@ namespace ImageProject.Controllers
 
                     var result = await _userManager.UpdateAsync(user);
                     if (result.Succeeded)
-                    {
                         return RedirectToAction("Index");
-                    }
                     else
                     {
                         foreach (var error in result.Errors)
@@ -94,7 +80,8 @@ namespace ImageProject.Controllers
                     }
                 }
             }
-            return PartialView("_Edit", model);
+
+            return View();
         }
     }
 }
