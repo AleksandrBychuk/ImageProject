@@ -12,6 +12,7 @@ namespace ImageProject.Models
     {
         public DbSet<UserImage> UserImages { get; set; }
         public DbSet<СonstituentСolor> СonstituentСolors { get; set; }
+        public DbSet<ImageCoord> ImageCoords { get; set; }
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options) { }
     }
 }

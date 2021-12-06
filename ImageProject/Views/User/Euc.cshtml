@@ -1,0 +1,34 @@
+﻿@model IEnumerable<ImageProject.Models.UserImage>
+
+@{
+    ViewData["Title"] = "Euc";
+}
+
+<h1>Euc</h1>
+<div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-7">
+        <div class="btn-group float-end">
+            <a class="btn"><i class="bi bi-pencil"></i></a>
+            <a class="btn"><i class="bi bi-plus-slash-minus"></i></a>
+            <a class="btn"><i class="bi bi-trash"></i></a>
+        </div>
+        <hr />
+        <br />
+        @foreach (var item in Model)
+        {
+            <a id="bhit" asp-controller="User" asp-action="GetSelectedImage" asp-route-selectedImage="@item.Id" asp-route-userOwner="@User.Identity.Name">
+                @Html.Raw($"<img style='width:150px; height:150px;' src=\"data:image/jpeg;base64," + Convert.ToBase64String(item.Image) + "\" />")
+            </a>
+        }
+    </div>
+    <div class="col-md-2"></div>
+</div>
+<style>
+    img {
+        margin: 10px;
+    }
+    img:hover {
+        filter: brightness(0.5);
+    }
+</style>

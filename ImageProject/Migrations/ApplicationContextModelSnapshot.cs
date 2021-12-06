@@ -19,6 +19,45 @@ namespace ImageProject.Migrations
                 .HasAnnotation("ProductVersion", "5.0.11")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("ImageProject.Models.ImageCoord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<decimal>("Altitude")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ImageId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("LatitudeDegree")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("LatitudeMinute")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("LatitudeSecond")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("LongitudeDegree")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("LongitudeMinute")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("LongitudeSecond")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ImageId")
+                        .IsUnique();
+
+                    b.ToTable("ImageCoords");
+                });
+
             modelBuilder.Entity("ImageProject.Models.User", b =>
                 {
                     b.Property<string>("Id")
@@ -264,6 +303,17 @@ namespace ImageProject.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("ImageProject.Models.ImageCoord", b =>
+                {
+                    b.HasOne("ImageProject.Models.UserImage", "Image")
+                        .WithOne("Coords")
+                        .HasForeignKey("ImageProject.Models.ImageCoord", "ImageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Image");
+                });
+
             modelBuilder.Entity("ImageProject.Models.UserImage", b =>
                 {
                     b.HasOne("ImageProject.Models.User", "UserOwner")
@@ -341,6 +391,8 @@ namespace ImageProject.Migrations
             modelBuilder.Entity("ImageProject.Models.UserImage", b =>
                 {
                     b.Navigation("СonstituentСolors");
+
+                    b.Navigation("Coords");
                 });
 #pragma warning restore 612, 618
         }

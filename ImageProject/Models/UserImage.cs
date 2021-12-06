@@ -11,6 +11,7 @@ namespace ImageProject.Models
         public DateTime DateAdded { get; set; }
         public byte[] Image { get; set; }
         public User UserOwner { get; set; }
+        public ImageCoord Coords { get; set; }
         public List<СonstituentСolor> СonstituentСolors { get; set; } = new();
 
         //КООРДИНАТЫ! Как? Что? От куда? Максимально просто для юзеров и максимально эффективно

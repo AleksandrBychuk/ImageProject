@@ -50,9 +50,9 @@ namespace ImageProject.Controllers
         [HttpPost]
         public async Task<IActionResult> UploadFiles() // желательно переделать с List<IFormFile> files на принятие, но это не точно, гуглить
         {
-            //WSMessageSubscribe messageModel = JsonConvert.DeserializeObject<WSMessageSubscribe>(e.Data);
             var files = Request.Form.Files;
             User user = await _userManager.GetUserAsync(User);
+            (decimal, decimal, decimal?, decimal, decimal, decimal?, decimal) coords = (0, 0, 0, 0, 0, 0, 0);
             foreach (var file in files)
             {
                 byte[] imageData = null;
@@ -60,13 +60,27 @@ namespace ImageProject.Controllers
                 {
                     imageData = binaryReader.ReadBytes((int)file.Length);
                 }
-                //await _applicationContext.UserImages.AddAsync(new UserImage { DateAdded = DateTime.Now, Image = imageData, UserOwner = user });
+                Bitmap image;
+                using (var ms = new MemoryStream(imageData))
+                {
+                    coords = ExtractLocation(new Bitmap(ms));
+                }
                 var newImage = new UserImage { DateAdded = DateTime.Now, Image = imageData, UserOwner = user };
-
                 var list = await AnalyzePicture(imageData, newImage);
                 newImage.СonstituentСolors = list;
+                newImage.Coords = new ImageCoord
+                {
+                    Image = newImage,
+                    ImageId = newImage.Id,
+                    LatitudeDegree = coords.Item1,
+                    LatitudeMinute = coords.Item2,
+                    LatitudeSecond = coords.Item3,
+                    LongitudeDegree = coords.Item4,
+                    LongitudeMinute = coords.Item5,
+                    LongitudeSecond = coords.Item6,
+                    Altitude = coords.Item7
+                };
                 user.UserImages.Add(newImage);
-                await _applicationContext.SaveChangesAsync();
             }
             await _applicationContext.SaveChangesAsync();
             string message = $"{files.Count} upload on server!";
@@ -133,6 +147,46 @@ namespace ImageProject.Controllers
                 }
             });
             return result;
+        }
+
+        private (decimal, decimal, decimal?, decimal, decimal, decimal?, decimal) ExtractLocation(Bitmap image)
+        {
+            (decimal, decimal, decimal?) latitude = (0, 0, 0);
+            (decimal, decimal, decimal?) longitude = (0, 0, 0);
+            decimal altitude = 0;
+            if (Array.IndexOf<int>(image.PropertyIdList, 1) != -1 &&
+                Array.IndexOf<int>(image.PropertyIdList, 2) != -1 &&
+                Array.IndexOf<int>(image.PropertyIdList, 3) != -1 &&
+                Array.IndexOf<int>(image.PropertyIdList, 4) != -1)
+            {
+                latitude = DecodeRational64u(image.GetPropertyItem(2));
+                longitude = DecodeRational64u(image.GetPropertyItem(4));
+                altitude = (decimal)BitConverter.ToUInt32(image.GetPropertyItem(6).Value, 0) / (decimal)BitConverter.ToUInt32(image.GetPropertyItem(6).Value, 4);
+            }
+            return (latitude.Item1, latitude.Item2, latitude.Item3, longitude.Item1, longitude.Item2, longitude.Item3, altitude);
+        }
+
+
+
+        private (decimal, decimal, decimal?) DecodeRational64u(System.Drawing.Imaging.PropertyItem propertyItem)
+        {
+            uint dN = BitConverter.ToUInt32(propertyItem.Value, 0);
+            uint dD = BitConverter.ToUInt32(propertyItem.Value, 4);
+            uint mN = BitConverter.ToUInt32(propertyItem.Value, 8);
+            uint mD = BitConverter.ToUInt32(propertyItem.Value, 12);
+            uint sN = BitConverter.ToUInt32(propertyItem.Value, 16);
+            uint sD = BitConverter.ToUInt32(propertyItem.Value, 20);
+
+            decimal deg;
+            decimal min;
+            decimal sec;
+            
+            if (dD > 0) { deg = (decimal)dN / dD; } else { deg = dN; }
+            if (mD > 0) { min = (decimal)mN / mD; } else { min = mN; }
+            if (sD > 0) { sec = (decimal)sN / sD; } else { sec = sN; }
+
+            if (sec == 0) return (deg, min, null);
+            else return (deg, min, sec);
         }
     }
 }
