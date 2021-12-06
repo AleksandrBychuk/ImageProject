@@ -11,13 +11,13 @@
         <div class="btn-group float-end">
             <a class="btn"><i class="bi bi-pencil"></i></a>
             <a class="btn"><i class="bi bi-plus-slash-minus"></i></a>
-            <a class="btn"><i class="bi bi-trash"></i></a>
+            <a class="btn" asp-controller="User" asp-action="Delete"><i class="bi bi-trash"></i></a>
         </div>
         <hr />
         <br />
         @foreach (var item in Model)
         {
-            <a id="bhit" asp-controller="User" asp-action="GetSelectedImage" asp-route-selectedImage="@item.Id" asp-route-userOwner="@User.Identity.Name">
+            <a onclick="submitPost(@item.Id)">
                 @Html.Raw($"<img style='width:150px; height:150px;' src=\"data:image/jpeg;base64," + Convert.ToBase64String(item.Image) + "\" />")
             </a>
         }
@@ -27,8 +27,25 @@
 <style>
     img {
         margin: 10px;
-    }
-    img:hover {
-        filter: brightness(0.5);
+        filter: brightness(1);
     }
 </style>
+<script type="text/javascript">
+    function submitPost(itemId)
+    {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("GetSelectedImage", "User")',
+            data: { selectedImage: itemId }
+        });
+    }
+    $('img').on('click', function () {
+        if ($(this).css("filter") == "brightness(1)")
+        {
+            $(this).css("filter", "brightness(0.5)")
+        } else
+        {
+            $(this).css("filter", "brightness(1)")
+        }
+    });
+</script>

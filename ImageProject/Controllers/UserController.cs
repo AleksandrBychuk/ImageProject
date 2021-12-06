@@ -17,14 +17,14 @@ namespace ImageProject.Controllers
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ApplicationContext _applicationContext;
-        private static ConcurrentDictionary<string, ConcurrentDictionary<string, byte>> _imagePairs = new();
+        private static ConcurrentDictionary<string, ConcurrentDictionary<int, byte>> _imagePairs = new();
         private IQueryable<UserImage> _userImages;
         public UserController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, ApplicationContext applicationContext)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _applicationContext = applicationContext;
-            _userImages = _applicationContext.UserImages.Include(_ => _.UserOwner).Include(_ => _.Coords);
+            _userImages = _applicationContext.UserImages.Include(_ => _.UserOwner).Include(_ => _.Coords).Include(_ => _.СonstituentСolors);
         }
 
         [HttpGet("User/{name}")] //НАПОМИНАЛКА: Разобраться полностью с дизайном в последнюю очередь! Не забыть!
@@ -45,24 +45,28 @@ namespace ImageProject.Controllers
             return View(model);
         }
 
-        //[HttpGet("{selectedImage}/{userOwner}")]
-        //public void GetSelectedImage(string selectedImage, string userOwner)
-        //{
-        //    _imagePairs.AddOrUpdate(userOwner, new ConcurrentDictionary<string, byte>(), (k, v) => v);
-        //    if (!_imagePairs[userOwner].TryAdd(selectedImage, 0))
-        //        _imagePairs[userOwner].Remove(selectedImage, out _);
-        //}
+        [HttpPost]
+        public void GetSelectedImage(int selectedImage)
+        {
+            _imagePairs.AddOrUpdate(User.Identity.Name, new ConcurrentDictionary<int, byte>(), (k, v) => v);
+            if (!_imagePairs[User.Identity.Name].TryAdd(selectedImage, 0))
+                _imagePairs[User.Identity.Name].Remove(selectedImage, out _);
+        }
 
+        [HttpGet("Delete")]
         public async Task<IActionResult> Delete()
         {
-            foreach (var deleteItem in _imagePairs[User.Identity.Name].Values)
+            if (_imagePairs[User.Identity.Name].Values.Count != 0)
             {
-                var result = await _userImages.FirstOrDefaultAsync(_ => _.Id == deleteItem);
-                _applicationContext.UserImages.Remove(result);
+                foreach (var deleteItem in _imagePairs[User.Identity.Name].Keys)
+                {
+                    var result = await _userImages.FirstOrDefaultAsync(_ => _.Id == deleteItem);
+                    _applicationContext.UserImages.Remove(result);
+                }
+                _imagePairs[User.Identity.Name].Clear();
+                await _applicationContext.SaveChangesAsync();
             }
-            _imagePairs[User.Identity.Name].Clear();
-            await _applicationContext.SaveChangesAsync();
-            return RedirectToAction("Euc", User.Identity.Name);
+            return RedirectToAction("Euc", "User", new { userName = User.Identity.Name });
         }
 
         [HttpGet]
