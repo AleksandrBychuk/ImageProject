@@ -14,10 +14,10 @@ namespace ImageProject.Models
         public UserImage Image { get; set; }
         public decimal LatitudeDegree { get; set; } // Широта/Градус
         public decimal LatitudeMinute { get; set; } // Широта/Минута
-        public decimal? LatitudeSecond { get; set; } // Широта/Секунда
+        public decimal LatitudeSecond { get; set; } // Широта/Секунда
         public decimal LongitudeDegree { get; set; } // Долгота/Градус
         public decimal LongitudeMinute { get; set; } // Долгота/Минута
-        public decimal? LongitudeSecond { get; set; } // Долгота/Секунда
+        public decimal LongitudeSecond { get; set; } // Долгота/Секунда
         public decimal Altitude { get; set; } // Высота
     }
 }

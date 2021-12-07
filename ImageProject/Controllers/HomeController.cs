@@ -52,7 +52,7 @@ namespace ImageProject.Controllers
         {
             var files = Request.Form.Files;
             User user = await _userManager.GetUserAsync(User);
-            (decimal, decimal, decimal?, decimal, decimal, decimal?, decimal) coords = (0, 0, 0, 0, 0, 0, 0);
+            (decimal, decimal, decimal, decimal, decimal, decimal, decimal) coords = (0, 0, 0, 0, 0, 0, 0);
             foreach (var file in files)
             {
                 byte[] imageData = null;
@@ -149,10 +149,10 @@ namespace ImageProject.Controllers
             return result;
         }
 
-        private (decimal, decimal, decimal?, decimal, decimal, decimal?, decimal) ExtractLocation(Bitmap image)
+        private (decimal, decimal, decimal, decimal, decimal, decimal, decimal) ExtractLocation(Bitmap image)
         {
-            (decimal, decimal, decimal?) latitude = (0, 0, 0);
-            (decimal, decimal, decimal?) longitude = (0, 0, 0);
+            (decimal, decimal, decimal) latitude = (0, 0, 0);
+            (decimal, decimal, decimal) longitude = (0, 0, 0);
             decimal altitude = 0;
             if (Array.IndexOf<int>(image.PropertyIdList, 1) != -1 &&
                 Array.IndexOf<int>(image.PropertyIdList, 2) != -1 &&
@@ -168,7 +168,7 @@ namespace ImageProject.Controllers
 
 
 
-        private (decimal, decimal, decimal?) DecodeRational64u(System.Drawing.Imaging.PropertyItem propertyItem)
+        private (decimal, decimal, decimal) DecodeRational64u(System.Drawing.Imaging.PropertyItem propertyItem)
         {
             uint dN = BitConverter.ToUInt32(propertyItem.Value, 0);
             uint dD = BitConverter.ToUInt32(propertyItem.Value, 4);
@@ -185,7 +185,7 @@ namespace ImageProject.Controllers
             if (mD > 0) { min = (decimal)mN / mD; } else { min = mN; }
             if (sD > 0) { sec = (decimal)sN / sD; } else { sec = sN; }
 
-            if (sec == 0) return (deg, min, null);
+            if (sec == 0) return (deg, min, 0);
             else return (deg, min, sec);
         }
     }

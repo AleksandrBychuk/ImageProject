@@ -69,18 +69,36 @@ namespace ImageProject.Controllers
             return RedirectToAction("Euc", "User", new { userName = User.Identity.Name });
         }
 
-        [HttpGet]
+        [HttpGet("Edit")]
         public async Task<IActionResult> Edit()
         {
-           
-            return RedirectToAction("Euc", User.Identity.Name);
+            UserImage image = new();
+            if (_imagePairs[User.Identity.Name].Values.Count == 1)
+            {
+                foreach (var item in _imagePairs[User.Identity.Name].Keys)
+                {
+                    image = await _userImages.FirstOrDefaultAsync(_ => _.Id == item);
+                }
+                _imagePairs[User.Identity.Name].Clear();
+                return View(image);
+            } else
+                return RedirectToAction("Euc", "User", new { userName = User.Identity.Name });
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Edit(UserImage image)
+        [HttpPost("Edit")]
+        public async Task<IActionResult> Edit(UserImage selectedImage, ImageCoord imageCoord)
         {
-
-            return RedirectToAction("Euc", User.Identity.Name);
+            UserImage editImage = await _userImages.FirstOrDefaultAsync(_ => _.Id == selectedImage.Id);
+            editImage.Coords.LatitudeDegree = imageCoord.LatitudeDegree;
+            editImage.Coords.LatitudeMinute = imageCoord.LatitudeMinute;
+            editImage.Coords.LatitudeSecond = imageCoord.LatitudeSecond;
+            editImage.Coords.LongitudeDegree = imageCoord.LongitudeDegree;
+            editImage.Coords.LongitudeMinute = imageCoord.LongitudeMinute;
+            editImage.Coords.LongitudeSecond = imageCoord.LongitudeSecond;
+            editImage.Coords.Altitude = imageCoord.Altitude;
+            _applicationContext.UserImages.Update(editImage);
+            await _applicationContext.SaveChangesAsync();
+            return RedirectToAction("Euc", "User", new { userName = User.Identity.Name });
         }
     }
 }
