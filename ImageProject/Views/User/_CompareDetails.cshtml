@@ -1,0 +1,20 @@
+﻿@model List<ImageProject.Models.UserImage>
+
+@{
+    ViewData["Title"] = "_CompareDetails";
+}
+
+<div>
+    <h4>UserImage</h4>
+    <hr />
+    <div class="col">
+        @foreach (var item in Model)
+        {
+            <form method="post">
+                @Html.Raw("<img style='width:150px; height:150px;' src=\"data:image/jpeg;base64," + Convert.ToBase64String(item.Image) + "\" />")
+                <input type="submit" class="btn btn-outline-dark" asp-controller="User" asp-action="CompareImages" asp-route-id="@item.Id" value="Add to compare"/>
+            </form>
+        }
+    </div>
+</div>
+

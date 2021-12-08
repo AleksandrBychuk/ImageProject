@@ -1,0 +1,72 @@
+﻿@model IEnumerable<ImageProject.Models.UserImage>
+
+@{
+    ViewData["Title"] = "CompareImages";
+}
+
+<h1>CompareImages</h1>
+
+<div class="row">
+    <div class="col-md-8">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Id)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.DateAdded)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Image)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.GreenPercent)
+                    </th>
+                    <th>
+                        Coordinate (lat,long,alt)
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.OrderByDescending(_ => _.DateAdded))
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Id)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DateAdded)
+                        </td>
+                        <td>
+                            @Html.Raw("<img style='width:200px; height:200px;' src=\"data:image/jpeg;base64," + Convert.ToBase64String(item.Image) + "\" />")
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.GreenPercent)%
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Coords.LatitudeDegree)
+                            @Html.DisplayFor(modelItem => item.Coords.LatitudeMinute)
+                            @Html.DisplayFor(modelItem => item.Coords.LatitudeSecond)<br />
+                            @Html.DisplayFor(modelItem => item.Coords.LongitudeDegree)
+                            @Html.DisplayFor(modelItem => item.Coords.LongitudeMinute)
+                            @Html.DisplayFor(modelItem => item.Coords.LongitudeSecond)<br />
+                            @Html.DisplayFor(modelItem => item.Coords.Altitude)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-4">
+        <div class="col">
+            @foreach (var item in ViewBag.NearImg)
+            {
+                <form method="post">
+                    @Html.Raw("<img style='width:150px; height:150px;' src=\"data:image/jpeg;base64," + Convert.ToBase64String(item.Image) + "\" />")
+                    <input type="submit" class="btn btn-outline-dark" asp-controller="User" asp-action="CompareImages" asp-route-id="@item.Id" value="Add to compare" />
+                </form>
+            }
+        </div>
+    </div>
+</div>
