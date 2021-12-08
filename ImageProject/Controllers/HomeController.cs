@@ -67,7 +67,8 @@ namespace ImageProject.Controllers
                 }
                 var newImage = new UserImage { DateAdded = DateTime.Now, Image = imageData, UserOwner = user };
                 var list = await AnalyzePicture(imageData, newImage);
-                newImage.СonstituentСolors = list;
+                newImage.СonstituentСolors = list.Item1;
+                newImage.GreenPercent = (int)list.Item2;
                 newImage.Coords = new ImageCoord
                 {
                     Image = newImage,
@@ -86,9 +87,10 @@ namespace ImageProject.Controllers
             string message = $"{files.Count} upload on server!";
             return Json(message);
         }
-        public async Task<List<СonstituentСolor>> AnalyzePicture(byte[] page, UserImage newImage)
+        public async Task<(List<СonstituentСolor>, float)> AnalyzePicture(byte[] page, UserImage newImage)
         {
             List<СonstituentСolor> result = new();
+            float greenPercent = 0;
             await Task.Factory.StartNew(() =>
             {
                 Mat img = new();
@@ -112,6 +114,8 @@ namespace ImageProject.Controllers
                         samples.Data[y + x * src.Rows, 0] = (float)src[y, x].Blue;
                         samples.Data[y + x * src.Rows, 1] = (float)src[y, x].Green;
                         samples.Data[y + x * src.Rows, 2] = (float)src[y, x].Red;
+                        if ((float)src[y, x].Green > (float)src[y, x].Blue && (float)src[y, x].Green > (float)src[y, x].Red)
+                            greenPercent += 1f / ((float)src.Width * (float)src.Height) * 100f;
                     }
                 }
 
@@ -146,7 +150,7 @@ namespace ImageProject.Controllers
                     result.Add(new СonstituentСolor { HexColor = hexCollection[t.Key], ValueCount = t.Value, Image = newImage });
                 }
             });
-            return result;
+            return (result, greenPercent);
         }
 
         private (decimal, decimal, decimal, decimal, decimal, decimal, decimal) ExtractLocation(Bitmap image)
@@ -165,8 +169,6 @@ namespace ImageProject.Controllers
             }
             return (latitude.Item1, latitude.Item2, latitude.Item3, longitude.Item1, longitude.Item2, longitude.Item3, altitude);
         }
-
-
 
         private (decimal, decimal, decimal) DecodeRational64u(System.Drawing.Imaging.PropertyItem propertyItem)
         {

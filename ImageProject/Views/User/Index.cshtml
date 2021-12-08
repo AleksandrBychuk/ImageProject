@@ -10,7 +10,7 @@
     <div class="row">
         <div class="col-md-2"></div>
         <div class="col-md-7">
-            <a class="btn float-end" asp-controller="User" asp-action="Euc" asp-route-userName="@Model.UserName"><i class="bi bi-pencil"></i></a>
+            <a class="btn float-end" asp-controller="User" asp-action="Euc" asp-route-userName="@Model.UserName"><i class="bi bi-tools"></i></a>
             <hr />
             @foreach (var item in Model.UserImages.OrderByDescending(u => u.DateAdded))
             {

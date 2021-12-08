@@ -10,6 +10,7 @@ namespace ImageProject.Models
         public int Id { get; set; }
         public DateTime DateAdded { get; set; }
         public byte[] Image { get; set; }
+        public int GreenPercent { get; set; }
         public User UserOwner { get; set; }
         public ImageCoord Coords { get; set; }
         public List<СonstituentСolor> СonstituentСolors { get; set; } = new();
