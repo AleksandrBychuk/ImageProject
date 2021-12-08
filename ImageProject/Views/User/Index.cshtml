@@ -10,19 +10,109 @@
     <div class="row">
         <div class="col-md-2"></div>
         <div class="col-md-7">
-            <a class="btn float-end" asp-controller="User" asp-action="Euc" asp-route-userName="@Model.UserName" ><i class="bi bi-pencil"></i></a>
+            <a class="btn float-end" asp-controller="User" asp-action="Euc" asp-route-userName="@Model.UserName"><i class="bi bi-pencil"></i></a>
             <hr />
             @foreach (var item in Model.UserImages.OrderByDescending(u => u.DateAdded))
             {
-                <a style="text-decoration:none;" asp-controller="Chart" asp-action="Index" asp-route-Id="@item.Id">
-                    @Html.Raw("<img style='width:200px; height:200px;' src=\"data:image/jpeg;base64," + Convert.ToBase64String(item.Image) + "\" />")
-                </a>
+                <div class="demo-3" onmouseenter='createPieChart(@Html.Raw(Json.Serialize(item.СonstituentСolors.Select(u => u.HexColor).ToArray())), @Html.Raw(Json.Serialize(item.СonstituentСolors.Select(u => u.ValueCount).ToArray())), @item.Id)' onmouseleave='destroyPieChart()'>
+                    <figure>
+                        @Html.Raw("<img style='width:200px; height:200px;' src=\"data:image/jpeg;base64," + Convert.ToBase64String(item.Image) + "\" />")
+                        <canvas id="@item.Id"></canvas>
+                    </figure>
+                </div>
             }
         </div>
     </div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.0/chart.min.js" integrity="sha512-GMGzUEevhWh8Tc/njS0bDpwgxdCJLQBWG3Z2Ct+JGOpVnEmjvNx6ts4v6A2XJf1HOrtOsfhv3hBKpK9kE5z8AQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script type="text/javascript">
+    var mypiechart;
+    function createPieChart(colorsArray, data, id) {
+        var pieChart = document.getElementById(id).getContext('2d');
+        mypiechart = new Chart(pieChart, {
+            type: 'pie',
+            data: {
+                datasets: [{
+                    label: 'Pie Chart',
+                    data: data,
+                    backgroundColor: colorsArray
+                }],
+                labels: colorsArray
+            },
+            options: {
+                plugins: {
+                    legend: false
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        })
+    }
+    function destroyPieChart() {
+        mypiechart.destroy();
+    }
+</script>
 <style>
-    img {
+    .demo-3 {
+        float: left;
         margin: 15px;
     }
+
+        .demo-3 figure {
+            margin: 0;
+            padding: 0;
+            position: relative;
+            cursor: pointer;
+        }
+
+            .demo-3 figure img {
+                display: block;
+                position: relative;
+                z-index: 10;
+            }
+
+            .demo-3 figure canvas {
+                display: block;
+                position: absolute;
+                z-index: 9;
+                -webkit-box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                box-sizing: border-box
+            }
+
+            .demo-3 figure canvas {
+                top: 0;
+                left: 0;
+                backface-visibility: hidden;
+                -webkit-transform: rotateY(-180deg);
+                -moz-transform: rotateY(-180deg);
+                transform: rotateY(-180deg);
+                -webkit-transition: all .5s;
+                -moz-transition: all .5s;
+                transition: all .5s
+            }
+
+            .demo-3 figure img {
+                backface-visibility: hidden;
+                -webkit-transition: all .5s;
+                -moz-transition: all .5s;
+                transition: all .5s
+            }
+
+            .demo-3 figure:hover img, figure.hover img {
+                -webkit-transform: rotateY(180deg);
+                -moz-transform: rotateY(180deg);
+                transform: rotateY(180deg)
+            }
+
+            .demo-3 figure:hover canvas, figure.hover canvas {
+                -webkit-transform: rotateY(0);
+                -moz-transform: rotateY(0);
+                transform: rotateY(0)
+            }
 </style>
