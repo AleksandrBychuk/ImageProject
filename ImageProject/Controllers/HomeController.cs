@@ -11,6 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -52,7 +54,7 @@ namespace ImageProject.Controllers
         {
             var files = Request.Form.Files;
             User user = await _userManager.GetUserAsync(User);
-            (decimal, decimal, decimal, decimal, decimal, decimal, decimal) coords = (0, 0, 0, 0, 0, 0, 0);
+            (int, int, decimal, int, int, decimal, decimal) coords = (0, 0, 0, 0, 0, 0, 0);
             foreach (var file in files)
             {
                 byte[] imageData = null;
@@ -60,10 +62,23 @@ namespace ImageProject.Controllers
                 {
                     imageData = binaryReader.ReadBytes((int)file.Length);
                 }
-                Bitmap image;
                 using (var ms = new MemoryStream(imageData))
                 {
                     coords = ExtractLocation(new Bitmap(ms));
+                    using (Image img = Image.FromStream(ms))
+                    {
+                        int h = 600;
+                        int w = 600;
+
+                        using (Bitmap b = new Bitmap(NormalizeOrientation(img), new Size(w, h)))
+                        {
+                            using (MemoryStream ms2 = new MemoryStream())
+                            {
+                                b.Save(ms2, System.Drawing.Imaging.ImageFormat.Jpeg);
+                                imageData = ms2.ToArray();
+                            }
+                        }
+                    }
                 }
                 var newImage = new UserImage { DateAdded = DateTime.Now, Image = imageData, UserOwner = user };
                 var list = await AnalyzePicture(imageData, newImage);
@@ -95,8 +110,7 @@ namespace ImageProject.Controllers
             {
                 Mat img = new();
                 CvInvoke.Imdecode(page, ImreadModes.Unchanged, img);
-                Image<Bgr, Byte> src = img.ToImage<Bgr, Byte>();
-                CvInvoke.Resize(src, src, new System.Drawing.Size { Height = 600, Width = 600 });
+                Image<Bgr, Byte> src = img.ToImage<Bgr, Byte>().Resize(600, 600, Inter.Linear);
                 Matrix<float> samples = new Matrix<float>(src.Rows * src.Cols, 1, 3);
                 Matrix<int> finalClusters = new Matrix<int>(src.Rows * src.Cols, 1);
                 Mat centers2 = new();
@@ -153,10 +167,10 @@ namespace ImageProject.Controllers
             return (result, greenPercent);
         }
 
-        private (decimal, decimal, decimal, decimal, decimal, decimal, decimal) ExtractLocation(Bitmap image)
+        private (int, int, decimal, int, int, decimal, decimal) ExtractLocation(Bitmap image)
         {
-            (decimal, decimal, decimal) latitude = (0, 0, 0);
-            (decimal, decimal, decimal) longitude = (0, 0, 0);
+            (int, int, decimal) latitude = (0, 0, 0);
+            (int, int, decimal) longitude = (0, 0, 0);
             decimal altitude = 0;
             if (Array.IndexOf<int>(image.PropertyIdList, 1) != -1 &&
                 Array.IndexOf<int>(image.PropertyIdList, 2) != -1 &&
@@ -170,7 +184,7 @@ namespace ImageProject.Controllers
             return (latitude.Item1, latitude.Item2, latitude.Item3, longitude.Item1, longitude.Item2, longitude.Item3, altitude);
         }
 
-        private (decimal, decimal, decimal) DecodeRational64u(System.Drawing.Imaging.PropertyItem propertyItem)
+        private (int, int, decimal) DecodeRational64u(System.Drawing.Imaging.PropertyItem propertyItem)
         {
             uint dN = BitConverter.ToUInt32(propertyItem.Value, 0);
             uint dD = BitConverter.ToUInt32(propertyItem.Value, 4);
@@ -187,8 +201,46 @@ namespace ImageProject.Controllers
             if (mD > 0) { min = (decimal)mN / mD; } else { min = mN; }
             if (sD > 0) { sec = (decimal)sN / sD; } else { sec = sN; }
 
-            if (sec == 0) return (deg, min, 0);
-            else return (deg, min, sec);
+            if (sec == 0) return ((int)deg, (int)min, 0);
+            else return ((int)deg, (int)min, sec);
+        }
+
+        public Image NormalizeOrientation(Image img)
+        {
+            if (Array.IndexOf(img.PropertyIdList, 274) > -1)
+            {
+                var orientation = (int)img.GetPropertyItem(274).Value[0];
+                switch (orientation)
+                {
+                    case 1:
+                        // No rotation required.
+                        break;
+                    case 2:
+                        img.RotateFlip(RotateFlipType.RotateNoneFlipX);
+                        break;
+                    case 3:
+                        img.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                        break;
+                    case 4:
+                        img.RotateFlip(RotateFlipType.Rotate180FlipX);
+                        break;
+                    case 5:
+                        img.RotateFlip(RotateFlipType.Rotate90FlipX);
+                        break;
+                    case 6:
+                        img.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                        break;
+                    case 7:
+                        img.RotateFlip(RotateFlipType.Rotate270FlipX);
+                        break;
+                    case 8:
+                        img.RotateFlip(RotateFlipType.Rotate270FlipNone);
+                        break;
+                }
+                // This EXIF data is now invalid and should be removed.
+                img.RemovePropertyItem(274);
+            }
+            return img;
         }
     }
 }

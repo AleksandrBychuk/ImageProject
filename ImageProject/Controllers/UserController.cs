@@ -148,7 +148,6 @@ namespace ImageProject.Controllers
                     _imagePairs[User.Identity.Name].Clear();
                     _memoryCache = result;
                     ViewBag.NearImg = resultNear.Distinct();
-                    //PartialView("_CompareDetails", resultNear.Distinct());
                     return View(result);
                 }
                 else if (_memoryCache.Count != 0)
@@ -174,7 +173,6 @@ namespace ImageProject.Controllers
                     _imagePairs[User.Identity.Name].Clear();
                     _memoryCache = result;
                     ViewBag.NearImg = resultNear.Distinct();
-                    //PartialView("_CompareDetails", resultNear.Distinct());
                     return View(result);
                 }
                 else
@@ -205,7 +203,6 @@ namespace ImageProject.Controllers
                 _imagePairs[User.Identity.Name].Clear();
                 _memoryCache = result;
                 ViewBag.NearImg = resultNear.Distinct();
-                //PartialView("_CompareDetails", resultNear.Distinct());
                 return View(result);
             }
             else

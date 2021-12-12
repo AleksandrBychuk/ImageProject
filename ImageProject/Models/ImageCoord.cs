@@ -12,11 +12,23 @@ namespace ImageProject.Models
         public int Id { get; set; }
         public int ImageId { get; set; }
         public UserImage Image { get; set; }
-        public decimal LatitudeDegree { get; set; } // Широта/Градус
-        public decimal LatitudeMinute { get; set; } // Широта/Минута
+
+        [Range(-90, 90)]
+        public int LatitudeDegree { get; set; } // Широта/Градус
+
+        [Range(0, 59)]
+        public int LatitudeMinute { get; set; } // Широта/Минута
+
+        [Range(0, 59)]
         public decimal LatitudeSecond { get; set; } // Широта/Секунда
-        public decimal LongitudeDegree { get; set; } // Долгота/Градус
-        public decimal LongitudeMinute { get; set; } // Долгота/Минута
+
+        [Range(-180, 180)]
+        public int LongitudeDegree { get; set; } // Долгота/Градус
+
+        [Range(0, 59)]
+        public int LongitudeMinute { get; set; } // Долгота/Минута
+
+        [Range(0, 59)]
         public decimal LongitudeSecond { get; set; } // Долгота/Секунда
         public decimal Altitude { get; set; } // Высота
     }

@@ -18,15 +18,15 @@
                 <input name="Id" type="hidden" asp-for="@Model.Id" />
                 <div class="input-group">
                     <span class="input-group-text" data-toggle="tooltip" data-placement="top" title="(degree, minute, second)">Latitude</span>
-                    <input name="LatitudeDegree" class="form-control" asp-for="@Model.Coords.LatitudeDegree" />
-                    <input name="LatitudeMinute" class="form-control" asp-for="@Model.Coords.LatitudeMinute" />
-                    <input name="LatitudeSecond" class="form-control" asp-for="@Model.Coords.LatitudeSecond" />
+                    <input min="-90" max="90" name="LatitudeDegree" class="form-control" asp-for="@Model.Coords.LatitudeDegree" />
+                    <input min="0" max="59" name="LatitudeMinute" class="form-control" asp-for="@Model.Coords.LatitudeMinute" />
+                    <input min="0" max="59" name="LatitudeSecond" class="form-control" asp-for="@Model.Coords.LatitudeSecond" />
                 </div><br />
                 <div class="input-group">
                     <span class="input-group-text" data-toggle="tooltip" data-placement="top" title="(degree, minute, second)">Longitude</span>
-                    <input name="LongitudeDegree" class="form-control" asp-for="@Model.Coords.LongitudeDegree" />
-                    <input name="LongitudeMinute" class="form-control" asp-for="@Model.Coords.LongitudeMinute" />
-                    <input name="LongitudeSecond" class="form-control" asp-for="@Model.Coords.LongitudeSecond" />
+                    <input min="-180" max="180" name="LongitudeDegree" class="form-control" asp-for="@Model.Coords.LongitudeDegree" />
+                    <input min="0" max="59" name="LongitudeMinute" class="form-control" asp-for="@Model.Coords.LongitudeMinute" />
+                    <input min="0" max="59" name="LongitudeSecond" class="form-control" asp-for="@Model.Coords.LongitudeSecond" />
                 </div><br />
                 <div class="input-group">
                     <span class="input-group-text" data-toggle="tooltip" data-placement="top" title="metres">Altitude</span>
