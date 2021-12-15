@@ -128,12 +128,34 @@ namespace ImageProject.Controllers
                         samples.Data[y + x * src.Rows, 0] = (float)src[y, x].Blue;
                         samples.Data[y + x * src.Rows, 1] = (float)src[y, x].Green;
                         samples.Data[y + x * src.Rows, 2] = (float)src[y, x].Red;
-                        if ((float)src[y, x].Green > (float)src[y, x].Blue && (float)src[y, x].Green > (float)src[y, x].Red)
-                            greenPercent += 1f / ((float)src.Width * (float)src.Height) * 100f;
+                        //if ((float)src[y, x].Green > (float)src[y, x].Blue && (float)src[y, x].Green > (float)src[y, x].Red)
+                        //    greenPercent += 1f / ((float)src.Width * (float)src.Height) * 100f;
+                        //float result = (2f * ((float)src[y, x].Green - (float)src[y, x].Red - (float)src[y, x].Blue)) / (2f * ((float)src[y, x].Green + (float)src[y, x].Red + (float)src[y, x].Blue));
+                        //float result = (2f * (float)src[y, x].Green - (float)src[y, x].Red - (float)src[y, x].Blue) / (2f * (float)src[y, x].Green + (float)src[y, x].Red + (float)src[y, x].Blue);
+                        //greenPercent += ((float)Math.Pow((float)src[y, x].Green, 2) - (float)Math.Pow((float)src[y, x].Red, 2)) / ((float)Math.Pow((float)src[y, x].Green, 2) + (float)Math.Pow((float)src[y, x].Red, 2));
+                        float R = (float)src[y, x].Red;
+                        float G = (float)src[y, x].Green;
+                        float B = (float)src[y, x].Blue;
+                        //float vari = (G - R) / (G + R - B);
+                        float grvi = (G - R) / (G + R);
+                        //float mgrvi = ((float)Math.Pow(G,2) - (float)Math.Pow(R, 2)) / ((float)Math.Pow(G, 2) + (float)Math.Pow(R, 2));
+                        float rgbvi = ((float)Math.Pow(G, 2) - B * R) / ((float)Math.Pow(G, 2) + B * R);
+                        //float cive = 0.441f * R - 0.881f * G + 0.385f * B + 18.7875f; // такое себе решение
+                        float gla = (2f * (float)src[y, x].Green - (float)src[y, x].Red - (float)src[y, x].Blue) / (2f * (float)src[y, x].Green + (float)src[y, x].Red + (float)src[y, x].Blue);
+                        if (gla > 0f)
+                            greenPercent += grvi;
+                        //float R = (float)src[y, x].Red;
+                        //float G = (float)src[y, x].Green;
+                        //float B = (float)src[y, x].Blue;
+                        //float vari = (G - R) / (G + R - B);
+                        //float rgbvi = ((float)Math.Pow(G, 2) - B * R) / ((float)Math.Pow(G, 2) + B * R);
+                        //float gla = (2f * (float)src[y, x].Green - (float)src[y, x].Red - (float)src[y, x].Blue) / (2f * (float)src[y, x].Green + (float)src[y, x].Red + (float)src[y, x].Blue);
+                        //float lai = 3.9941f * vari + 4.8813f * rgbvi + 0.0122f * B + 6.0529f * gla + 1.2818f;
+                        //if (lai > 0)
+                        //    greenPercent += lai;
                     }
                 }
-
-                CvInvoke.Kmeans(samples, 8, finalClusters, term, 10, KMeansInitType.PPCenters, centers2);
+                CvInvoke.Kmeans(samples, 9, finalClusters, term, 10, KMeansInitType.PPCenters, centers2);
 
                 for (int y = 0; y < src.Rows; y++)
                 {
